@@ -26,13 +26,28 @@ class MySQLDatabase(DatabaseInterface):
     
     def connect(self, config):
         self.connection = mysql.connector.connect(**config)
-        print("Conectado ao MySQL")
+        # verificar se a conexão foi bem-sucedida
+        if self.connection.is_connected():
+            print("Conexão bem-sucedida ao MySQL")
+        else:
+            print("Erro na conexão ao MySQL")
+            exit(1)
+     
     
     def execute_query(self, query, params=None):
         cursor = self.connection.cursor()
         cursor.execute(query, params)
-        self.connection.commit()
-        return cursor.fetchall()
+
+        # Verifica se a query é um SELECT ou outra query que retorna resultados
+        if cursor.with_rows:
+            result = cursor.fetchall()  # Consome todos os resultados
+        else:
+            result = None  # ou outra ação apropriada
+
+        self.connection.commit()  # Apenas após consumir os resultados
+
+        cursor.close()  # Fechar o cursor após o uso
+        return result
     
     def disconnect(self):
         if self.connection:
@@ -53,6 +68,18 @@ class MongoDBDatabase(DatabaseInterface):
     
     def execute_query(self, query, params=None):
         # Para MongoDB, query pode ser uma string representando a coleção e params um filtro
+         # Verifica se a query é um SELECT ou outra query que retorna resultados
+        if query.startswith('SELECT') or query.startswith('SHOW'):
+            result = self.db[query].find(params)
+            # Consome todos os resultados
+            result = list(result)
+        else:
+            # Para outras operações, como INSERT, UPDATE, DELETE, etc.
+            result = self.db[query].update_one(params, {"$set": params})
+            # Consome todos os resultados
+            result = list(result)
+
+
         collection = self.db[query]
         return collection.find(params)
     
@@ -79,6 +106,14 @@ class OracleDatabase(DatabaseInterface):
     def execute_query(self, query, params=None):
         cursor = self.connection.cursor()
         cursor.execute(query, params)
+
+        # Verifica se a query é um SELECT ou outra query que retorna resultados
+        if cursor.with_rows:
+            result = cursor.fetchall()  # Consome todos os resultados
+        else:
+            result = None  # ou outra ação apropriada
+            
+
         self.connection.commit()
         return cursor.fetchall()
     
