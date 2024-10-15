@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import mysql.connector
 from pymongo import MongoClient
-import cx_Oracle
+import oracledb  # Atualizado de cx_Oracle para oracledb
 
 # Interface de banco de dados
 class DatabaseInterface(ABC):
@@ -61,15 +61,19 @@ class MongoDBDatabase(DatabaseInterface):
             self.connection.close()
             print("Desconectado do MongoDB")
 
-# Implementação Oracle
+# Implementação Oracle com oracledb
 class OracleDatabase(DatabaseInterface):
     
     def __init__(self):
         self.connection = None
     
     def connect(self, config):
-        dsn = cx_Oracle.makedsn(config['host'], config['port'], sid=config['sid'])
-        self.connection = cx_Oracle.connect(config['user'], config['password'], dsn)
+        # Usando a nova biblioteca oracledb para criar a conexão
+        self.connection = oracledb.connect(
+            user=config['user'], 
+            password=config['password'], 
+            dsn=f"{config['host']}:{config['port']}/{config['sid']}"
+        )
         print("Conectado ao Oracle")
     
     def execute_query(self, query, params=None):
@@ -104,5 +108,4 @@ class GenericDatabase:
     
     def close(self):
         self.db.disconnect()
-
 
