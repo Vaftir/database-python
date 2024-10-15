@@ -220,7 +220,7 @@ db.close()
 ```
 
 ### Usando Oracle:
-
+#### **Consultando registros (SELECT):**
 ```python
 from database import GenericDatabase
 
@@ -228,7 +228,7 @@ from database import GenericDatabase
 oracle_config = {
     'host': 'localhost',
     'port': 1521,
-    'sid': 'orcl',
+    'sid': 'orcl',  # Service ID (SID) do Oracle
     'user': 'admin',
     'password': 'password'
 }
