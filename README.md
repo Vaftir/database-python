@@ -82,6 +82,8 @@ Aqui está um exemplo básico de como usar a classe genérica para conectar e ex
 
 ### Usando MySQL:
 
+#### **Consultando registros (SELECT):**
+
 ```python
 from database import GenericDatabase
 
@@ -100,7 +102,57 @@ print(result)
 db.close()
 ```
 
+#### **Inserindo um registro (INSERT):**
+
+```python
+from database import GenericDatabase
+
+# Configuração para MySQL
+mysql_config = {
+    'host': 'localhost',
+    'user': 'root',
+    'password': 'password',
+    'database': 'testdb'
+}
+
+# Conectar ao MySQL
+db = GenericDatabase('mysql', mysql_config)
+
+# Executar um INSERT
+insert_query = "INSERT INTO users (name, email) VALUES (%s, %s)"
+params = ("John Doe", "john.doe@example.com")
+db.execute(insert_query, params)
+print("Registro inserido com sucesso!")
+db.close()
+```
+
+#### **Deletando um registro (DELETE):**
+
+```python
+from database import GenericDatabase
+
+# Configuração para MySQL
+mysql_config = {
+    'host': 'localhost',
+    'user': 'root',
+    'password': 'password',
+    'database': 'testdb'
+}
+
+# Conectar ao MySQL
+db = GenericDatabase('mysql', mysql_config)
+
+# Executar um DELETE
+delete_query = "DELETE FROM users WHERE email = %s"
+params = ("john.doe@example.com",)
+db.execute(delete_query, params)
+print("Registro deletado com sucesso!")
+db.close()
+```
+
 ### Usando MongoDB:
+
+#### **Consultando registros (SELECT):**
 
 ```python
 from database import GenericDatabase
@@ -117,6 +169,53 @@ db = GenericDatabase('mongodb', mongodb_config)
 result = db.execute('users', {'name': 'John'})
 for doc in result:
     print(doc)
+db.close()
+```
+#### **Inserindo um registro (INSERT):**
+
+Em MongoDB, o método para inserção é ligeiramente diferente, já que usamos `insert_one` ou `insert_many` para inserir documentos.
+
+```python
+from database import GenericDatabase
+
+# Configuração para MongoDB
+mongodb_config = {
+    'host': 'localhost',
+    'port': 27017,
+    'database': 'testdb'
+}
+
+# Conectar ao MongoDB
+db = GenericDatabase('mongodb', mongodb_config)
+
+# Executar um INSERT
+insert_query = 'users'  # Nome da coleção
+params = {"name": "John Doe", "email": "john.doe@example.com"}
+db.execute(insert_query).insert_one(params)
+print("Documento inserido com sucesso!")
+db.close()
+```
+
+#### **Deletando um registro (DELETE):**
+
+```python
+from database import GenericDatabase
+
+# Configuração para MongoDB
+mongodb_config = {
+    'host': 'localhost',
+    'port': 27017,
+    'database': 'testdb'
+}
+
+# Conectar ao MongoDB
+db = GenericDatabase('mongodb', mongodb_config)
+
+# Executar um DELETE
+delete_query = 'users'  # Nome da coleção
+params = {"email": "john.doe@example.com"}
+db.execute(delete_query).delete_one(params)
+print("Documento deletado com sucesso!")
 db.close()
 ```
 
@@ -140,6 +239,57 @@ result = db.execute("SELECT * FROM employees")
 print(result)
 db.close()
 ```
+
+#### **Inserindo um registro (INSERT):**
+
+```python
+from database import GenericDatabase
+
+# Configuração para Oracle
+oracle_config = {
+    'host': 'localhost',
+    'port': 1521,
+    'sid': 'orcl',
+    'user': 'admin',
+    'password': 'password'
+}
+
+# Conectar ao Oracle
+db = GenericDatabase('oracle', oracle_config)
+
+# Executar um INSERT
+insert_query = "INSERT INTO employees (name, email) VALUES (:1, :2)"
+params = ("John Doe", "john.doe@example.com")
+db.execute(insert_query, params)
+print("Registro inserido no Oracle com sucesso!")
+db.close()
+```
+
+#### **Deletando um registro (DELETE):**
+
+```python
+from database import GenericDatabase
+
+# Configuração para Oracle
+oracle_config = {
+    'host': 'localhost',
+    'port': 1521,
+    'sid': 'orcl',
+    'user': 'admin',
+    'password': 'password'
+}
+
+# Conectar ao Oracle
+db = GenericDatabase('oracle', oracle_config)
+
+# Executar um DELETE
+delete_query = "DELETE FROM employees WHERE email = :1"
+params = ("john.doe@example.com",)
+db.execute(delete_query, params)
+print("Registro deletado no Oracle com sucesso!")
+db.close()
+```
+
 
 ## Contribuições
 
